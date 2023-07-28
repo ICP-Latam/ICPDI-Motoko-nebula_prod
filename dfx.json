@@ -1,0 +1,29 @@
+{
+  "canisters": {
+    "nebula_backend": {
+      "main": "src/nebula_backend/main.mo",
+      "type": "motoko"
+    },
+    "nebula_frontend": {
+      "dependencies": [
+        "nebula_backend"
+      ],
+      "frontend": {
+        "entrypoint": "src/nebula_frontend/src/index.html"
+      },
+      "source": [
+        "src/nebula_frontend/assets",
+        "dist/nebula_frontend/"
+      ],
+      "type": "assets"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
