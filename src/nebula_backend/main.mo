@@ -7,12 +7,14 @@ import Buffer "mo:base/Buffer";
 import Debug "mo:base/Debug";
 import Nat "mo:base/Nat";
 import HashMap "mo:base/HashMap";
+import Iter "mo:base/Iter";
 
-actor Nebula {
 
-  type Candidate = {id:Nat; name:Text; identity_registrator:Principal;}; 
+actor Nebula{
+
+  type Candidate = {id:Nat; name:Text; identity_registrator:Principal;};
   var post_submission_id = 0;
-  var candidate_submissions =  Buffer.Buffer<Candidate>(0); 
+  var candidate_submissions =  Buffer.Buffer<Candidate>(0);  
 
   //isolated
   func checkif_already_candidate(msg:Principal): Bool{  
@@ -66,24 +68,53 @@ actor Nebula {
   //var post_db = HashMap.HashMap<Nat, Post>(0);
   //var post_db = HashMap.empty<Nat, Post>();
   //var post_db = HashMap.HashMap<Nat, Post>(5, Nat.equal, Nat.hash);
+  //var post_db : HashMap = HashMap<Text, Post>(0, Text.equal, Text.hash); no jala
   var post_db = HashMap.HashMap<Text, Post>(0, Text.equal, Text.hash);
 
-  public shared (msg) func b_addPost(titlex:Text, descx:Text): async () {
+  public shared (msg) func b_addPost(titlex:Text, descx:Text): async Text {
     post_counter_id += 1;
     let nuevoPost : Post = {title = titlex; desc = descx; author = msg.caller};
     post_db.put(Nat.toText(post_counter_id), nuevoPost);
+    return "Post: " #titlex# "correctamente agregado"
   };
 
-  public shared (msg) func b_getAllPosts(): async Text {
-    var pairs = "";
+  //[C]
+  public shared (msg) func b_getAllPosts_resText(): async Text {
+    var fullquery = "";
     for ((key, value) in post_db.entries()) {
-      pairs := "(" #key# ", " #value.title# ", " #value.desc# ") " # pairs
+      fullquery := "(" #key# ", " #value.title# ", " #value.desc# ") " # fullquery
     };
-  return pairs;
+    return fullquery;
   };
 
-  //how to iterate a hashmap for get posts use trie
-  //if u want to select especific data by key use hashmap
+  //[C]
+  public func b_getAllPosts_resArrayiter() : async [(Text, Post)] {
+    return Iter.toArray<(Text, Post)>(post_db.entries());
+  };
+
+  //[C]pendiente no se como retornar un buffer
+  type TempPost = {id:Text; title:Text; desc:Text; author:Principal};
+  public func b_getAllPosts_resBuffer(): async [TempPost]{
+    let query_buffer_bydbhashmaps =  Buffer.Buffer<TempPost>(0); 
+    for ((key, value) in post_db.entries()) {
+      let tempPostx : TempPost = {
+        id = key;
+        title = value.title;
+        desc = value.desc;
+        author = value.author};
+      query_buffer_bydbhashmaps.add(tempPostx); //add para buffers
+    };
+    return Buffer.toArray(query_buffer_bydbhashmaps);
+  };
+
+  public shared (msg) func b_getAllPost_byid(idpostx:Nat): async ?Post {   
+    return post_db.get(Nat.toText(idpostx));
+  };
+
+
+
+
+
 
 }; //endcannister
 
