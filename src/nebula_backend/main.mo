@@ -8,54 +8,10 @@ import Debug "mo:base/Debug";
 import Nat "mo:base/Nat";
 import HashMap "mo:base/HashMap";
 import Iter "mo:base/Iter";
+import Bool "mo:base/Bool";
 
 
 actor Nebula{
-
-  type Candidate = {id:Nat; name:Text; identity_registrator:Principal;};
-  var post_submission_id = 0;
-  var candidate_submissions =  Buffer.Buffer<Candidate>(0);  
-
-  //isolated
-  func checkif_already_candidate(msg:Principal): Bool{  
-    var candidfound = false;
-    Buffer.iterate<Candidate>(candidate_submissions, func (x) {   
-      if (x.identity_registrator == msg){
-        candidfound := true};
-    });
-    return candidfound
-  };
-
-  public shared (msg) func a_addCandidate_submission(namex : Text): async (){
-    let newcandidate = Buffer.Buffer<Candidate>(0);
-    post_submission_id += 1;
-    newcandidate.add({
-      id = post_submission_id;
-      name = namex;
-      identity_registrator = msg.caller;
-    });
-    candidate_submissions.append(newcandidate);
-  };
-
-  public query func a_getCandidates(): async [Candidate] {
-    return Buffer.toArray(candidate_submissions);
-  };
-
-  public func a_deleteCandidate_byid_safe(idx: Nat) : async Text  {
-    var status_query = "No encontrado";
-    var index = 0;
-    
-    Buffer.iterate<Candidate>(candidate_submissions, func (x) {   
-      if (x.id == idx){
-        status_query := "Candidato encontrado y borrado";
-        let x = candidate_submissions.remove(index);       
-      };
-      index += 1;
-    });
-
-    return status_query
-  };
-
 
   public shared query (msg) func whoiam() : async Principal {
     return msg.caller;
@@ -75,7 +31,7 @@ actor Nebula{
     post_counter_id += 1;
     let nuevoPost : Post = {title = titlex; desc = descx; author = msg.caller};
     post_db.put(Nat.toText(post_counter_id), nuevoPost);
-    return "Post: " #titlex# "correctamente agregado"
+    return "Post Title: [" #titlex# "] correctamente agregado"
   };
 
   //[C]
@@ -111,6 +67,20 @@ actor Nebula{
     return post_db.get(Nat.toText(idpostx));
   };
 
+  public func b_deletePost_byid(idpostx:Nat): async Bool {  
+    var deleted = false;
+    let post = post_db.get(Nat.toText(idpostx));
+    let founded: Bool = switch post{
+      case null false;
+      case (?Post) true;
+    };
+    if (founded){
+       post_db.delete(Nat.toText(idpostx));
+       deleted := true ;
+    };
+   
+    return deleted;
+  };
 
 
 
