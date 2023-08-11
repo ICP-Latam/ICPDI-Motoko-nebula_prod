@@ -67,19 +67,20 @@ actor Nebula{
     return post_db.get(Nat.toText(idpostx));
   };
 
-  public func b_deletePost_byid(idpostx:Nat): async Bool {  
-    var deleted = false;
-    let post = post_db.get(Nat.toText(idpostx));
+  public func b_deletePost_byid(idpostx:Nat): async Text {  
+    var result_deleted = "No Encontrado";
+    let str_numpost = Nat.toText(idpostx);
+    let post = post_db.get(str_numpost);
     let founded: Bool = switch post{
       case null false;
       case (?Post) true;
     };
     if (founded){
-       post_db.delete(Nat.toText(idpostx));
-       deleted := true ;
+       post_db.delete(str_numpost);
+        result_deleted := "Post: [" # str_numpost # "] Encontrado y borrado";
     };
    
-    return deleted;
+    return result_deleted;
   };
 
 
