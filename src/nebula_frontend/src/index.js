@@ -2,6 +2,10 @@ import { nebula_backend } from "../../declarations/nebula_backend";
 
 const resultsDiv = document.getElementById('results');
 
+function test(){
+  console.log("hello");
+};
+
 document.addEventListener('DOMContentLoaded', async (e) => {
   e.preventDefault(); 
   const res_get_allposts = await nebula_backend.b_getAllPosts_resArrayiter();
@@ -69,5 +73,6 @@ document.querySelector("#formdelete").addEventListener("submit", async (e) => {
   readPosts_incannist_v2(res_get_allposts)
   return false;
 });
+
 
 
