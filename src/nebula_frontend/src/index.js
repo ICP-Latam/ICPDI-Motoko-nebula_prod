@@ -9,7 +9,7 @@ function test(){
 document.addEventListener('DOMContentLoaded', async (e) => {
   e.preventDefault(); 
   const res_get_allposts = await nebula_backend.b_getAllPosts_resArrayiter();
-  readPosts_incannist_v2(res_get_allposts)
+  readPosts_incannist_v2(res_get_allposts);
   return false;
 }, false);
 
@@ -24,13 +24,13 @@ document.querySelector("#formadd").addEventListener("submit", async (e) => {
   const in_description = document.getElementById("desc").value.toString();
   
   // Interact with foo actor, calling the greet method
-  const res_addpost = await nebula_backend.b_addPost(in_title,in_description)
+  const res_addpost = await nebula_backend.b_addPost(in_title,in_description);
   //const greeting = await nebula_backend.greet(name);
   button.removeAttribute("disabled");
   document.getElementById("responsepost").innerText = res_addpost;
 
   const res_get_allposts = await nebula_backend.b_getAllPosts_resArrayiter();
-  readPosts_incannist_v2(res_get_allposts)
+  readPosts_incannist_v2(res_get_allposts);
   return false;
 });
 
